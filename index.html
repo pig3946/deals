@@ -78,15 +78,9 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 .view-products .brand-block { text-align: left; }
 .header .brand {
   color: oklch(1.000 0.000 0);
-  font-weight: 700;
-  font-size: 1.2rem;
+  font-weight: 600;
+  font-size: 0.88rem;
   letter-spacing: -0.01em;
-}
-.header .brand-sub {
-  color: oklch(0.85 0.04 230);
-  font-size: 0.75rem;
-  font-weight: 400;
-  margin-top: 2px;
 }
 .header .back-btn {
   color: oklch(1.000 0.000 0);
@@ -145,8 +139,8 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 
 /* ═══ Topic Cards ═══ */
 .topics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: var(--space-md);
   padding-bottom: var(--space-xl);
 }
@@ -154,6 +148,8 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   background: var(--surface);
   border-radius: var(--radius-md);
   overflow: hidden;
+  display: grid;
+  grid-template-columns: 90px 1fr;
   transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -162,35 +158,37 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   transform: scale(0.97);
 }
 .topic-card-img {
-  aspect-ratio: 4/3;
-  background: var(--surface);
+  background: linear-gradient(135deg, oklch(0.950 0.020 230), oklch(0.970 0.010 230));
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   padding: var(--space-md);
+  color: var(--primary);
 }
-.topic-card-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+.topic-card-img svg {
+  width: 40px;
+  height: 40px;
+  opacity: 0.5;
 }
 .topic-card-body {
   padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .topic-card-body h3 {
-  font-size: 1.05rem;
-  font-weight: 750;
+  font-size: 1rem;
+  font-weight: 700;
   letter-spacing: -0.01em;
 }
 .topic-card-body .price-from {
-  margin-top: 4px;
-  font-size: 0.95rem;
+  margin-top: 2px;
+  font-size: 0.92rem;
   font-weight: 700;
   color: var(--accent);
 }
 .topic-card-body .meta {
-  margin-top: 6px;
+  margin-top: 4px;
   font-size: 0.75rem;
   color: var(--muted);
 }
@@ -584,8 +582,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
       뒤로
     </button>
     <div class="brand-block">
-      <div class="brand">피그의 전수조사</div>
-      <div class="brand-sub">데이터 기반 최저가 비교</div>
+      <div class="brand">매일 갱신되는 최저가 비교</div>
     </div>
   </div>
 </header>
@@ -600,7 +597,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
         </div>
         <h1>피그의 전수조사</h1>
         <p class="hero-sub">네이버 쇼핑 데이터 기반 · 스펙 직접 확인</p>
-        <p class="stat"><strong id="survive-count">0</strong>개 제품 비교 · <span id="gen-date">2026-07-21 19:23</span> 기준<br>매일 자동 갱신</p>
+        <p class="stat"><strong id="survive-count">0</strong>개 제품 비교 · <span id="gen-date">2026-07-21 19:37</span> 기준<br>매일 자동 갱신</p>
       </div>
       <div class="topics-grid" id="topics-grid"></div>
     </div>
@@ -640,14 +637,14 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
       가격은 네이버 쇼핑 API 기준이며 멤버십 여부에 따라 실제 결제 금액이 다를 수 있습니다.
     </p>
     <p class="source">
-      <span id="footer-date">2026-07-21 19:23</span> 기준 · 피그의 전수조사 @jeonsu_josa
+      <span id="footer-date">2026-07-21 19:37</span> 기준 · 피그의 전수조사 @jeonsu_josa
     </p>
   </div>
 </footer>
 
 <script>
 const DATA = {
-  "generated_at": "2026-07-21 19:23",
+  "generated_at": "2026-07-21 19:37",
   "assumptions": {
     "electricity_rate": 120,
     "daily_hours": 8,
@@ -2014,19 +2011,24 @@ function init() {
     card.setAttribute('tabindex', '0');
     card.setAttribute('aria-label', topic.name + ' 비교 보기');
     card.style.animationDelay = (i * 0.04 + 0.04) + 's';
-    // 1위 제품 실물 이미지를 토픽 카드 표지로
-    const topProduct = topic.products && topic.products[0];
-    const topImg = topProduct && topProduct.image;
-    const imgHtml = topImg
-      ? '<img src="' + topImg + '" alt="' + topic.name + ' 1위" loading="lazy" onerror="this.outerHTML=\'<div class=img-placeholder>' + topic.name[0] + '</div>\';">'
-      : '<div class="img-placeholder">' + topic.name[0] + '</div>';
+    // 중립 SVG 픽토그램 (브랜드 편향 방지)
+    const TOPIC_ICONS = {
+      '제습': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>',
+      '에어컨': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="10" rx="2"/><path d="M6 18c0-2 2-4 6-4s6 2 6 4"/></svg>',
+      '선풍기': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="10" r="7"/><circle cx="12" cy="10" r="2"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>',
+      '이어폰': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>',
+    };
+    let imgHtml = '<div class="img-placeholder">' + topic.name[0] + '</div>';
+    for (const [k, v] of Object.entries(TOPIC_ICONS)) {
+      if (topic.name.includes(k)) { imgHtml = v; break; }
+    }
     const descHtml = topic.description ? '<div class="meta">' + topic.description + '</div>' : '';
     card.innerHTML =
       '<div class="topic-card-img">' + imgHtml + '</div>' +
       '<div class="topic-card-body">' +
         '<h3>' + topic.name + '</h3>' + descHtml +
         '<div class="price-from">' + topic.min_price.toLocaleString() + '원~</div>' +
-        '<div class="meta">' + topic.brands + '개 브랜드 비교</div>' +
+        '<div class="meta">' + topic.brands + '개 브랜드 · ' + topic.products.length + '개 제품 비교</div>' +
       '</div>';
     card.addEventListener('click', () => showProducts(topic.name));
     card.addEventListener('keydown', (e) => {
