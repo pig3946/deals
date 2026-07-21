@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>피그의 전수조사 — 데이터 기반 최저가 비교</title>
+<meta name="description" content="네이버 쇼핑 API 실데이터 기반 제품별 최저가·스펙 비교. 숫자는 거짓말 안 합니다.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+/* ═══ Design Tokens ═══ */
+:root {
+  --bg:       oklch(1.000 0.000 0);
+  --surface:  oklch(0.960 0.006 230);
+  --ink:      oklch(0.170 0.012 230);
+  --muted:    oklch(0.480 0.018 230);
+  --primary:  oklch(0.480 0.155 230);
+  --primary-light: oklch(0.940 0.025 230);
+  --accent:   oklch(0.620 0.185 30);
+  --accent-hover: oklch(0.560 0.185 30);
+  --danger:   oklch(0.580 0.200 25);
+  --success:  oklch(0.450 0.12 155);
+
+  --font: "Pretendard Variable", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+}
+
+/* ═══ Reset ═══ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: none; background: none; }
+
+/* ═══ Layout ═══ */
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* ═══ Header ═══ */
+.header {
+  background: var(--primary);
+  padding: var(--space-lg) var(--space-md);
+  padding-top: calc(var(--space-lg) + env(safe-area-inset-top, 0));
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.header-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-block { text-align: center; }
+.view-products .header-inner { justify-content: flex-start; gap: var(--space-md); }
+.view-products .brand-block { text-align: left; }
+.header .brand {
+  color: oklch(1.000 0.000 0);
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.01em;
+}
+.header .brand-sub {
+  color: oklch(0.85 0.04 230);
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-top: 2px;
+}
+.header .back-btn {
+  color: oklch(1.000 0.000 0);
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: none;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+.header .back-btn:active {
+  background: oklch(0.42 0.14 230);
+}
+.view-products .header .back-btn { display: flex; }
+
+/* ═══ Hero ═══ */
+.hero {
+  padding: var(--space-xl) var(--space-md) var(--space-lg);
+  text-align: center;
+}
+.hero h1 {
+  font-size: clamp(1.4rem, 5vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  text-wrap: balance;
+  color: var(--ink);
+}
+.hero .stat {
+  margin-top: var(--space-sm);
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+.hero .stat strong {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ═══ Topic Cards ═══ */
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  padding-bottom: var(--space-xl);
+}
+.topic-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.topic-card:active {
+  transform: scale(0.97);
+}
+.topic-card-img {
+  aspect-ratio: 1;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: var(--space-md);
+}
+.topic-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.topic-card-body {
+  padding: var(--space-md);
+}
+.topic-card-body h3 {
+  font-size: 1.05rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+.topic-card-body .price-from {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.topic-card-body .meta {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ═══ Products View ═══ */
+.products-section {
+  display: none;
+  padding-bottom: var(--space-2xl);
+}
+.view-products .products-section { display: block; }
+.view-products .topics-section { display: none; }
+
+.products-header {
+  padding: var(--space-lg) 0 var(--space-sm);
+  text-align: center;
+}
+.products-header h2 {
+  font-size: clamp(1.3rem, 4.5vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.products-header .products-desc {
+  margin-top: var(--space-sm);
+  font-size: 0.82rem;
+  color: var(--primary);
+  font-weight: 600;
+  background: var(--primary-light);
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+.products-header .products-count {
+  margin-top: var(--space-xs);
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ═══ Ranking Tabs ═══ */
+.ranking-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.ranking-tabs::-webkit-scrollbar { display: none; }
+.ranking-tab {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--surface);
+  color: var(--muted);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.ranking-tab.active {
+  background: var(--primary);
+  color: oklch(1.000 0.000 0);
+}
+.ranking-tab:active {
+  transform: scale(0.96);
+}
+
+.ranking-note {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+  padding: 0 0 var(--space-sm);
+  line-height: 1.4;
+}
+
+/* ═══ Commission Notice ═══ */
+.commission-notice {
+  margin: var(--space-md) 0;
+  padding: 10px 14px;
+  background: oklch(0.970 0.010 80);
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Product List */
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.product-card {
+  background: var(--bg);
+  border: 1px solid oklch(0.920 0.005 230);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 0;
+  box-shadow: 0 1px 3px oklch(0.000 0.000 0 / 0.04);
+  transition: box-shadow 0.15s;
+}
+.product-card:hover {
+  box-shadow: 0 2px 8px oklch(0.000 0.000 0 / 0.08);
+}
+.product-img {
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  position: relative;
+}
+.product-img img {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.product-img .rank {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: oklch(1.000 0.000 0);
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.product-card.rank-1 {
+  border: 2px solid var(--accent);
+  background: oklch(0.995 0.008 30);
+}
+.product-card.rank-1 .product-img .rank {
+  background: var(--accent);
+  width: 28px;
+  height: 28px;
+  font-size: 0.75rem;
+}
+.product-card.rank-1 .product-img img {
+  width: 84px;
+  height: 84px;
+}
+.product-info {
+  padding: 14px var(--space-md) 14px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.product-verdict {
+  display: inline-block;
+  padding: 3px 8px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  align-self: flex-start;
+}
+.product-card.rank-1 .product-verdict {
+  background: oklch(0.940 0.035 30);
+  color: var(--accent);
+}
+.product-verdict.verdict-warn {
+  background: oklch(0.950 0.025 25);
+  color: var(--danger);
+}
+.product-metric {
+  font-size: 0.72rem;
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.product-context {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.product-context.cheaper {
+  color: var(--success);
+}
+.product-spec-extras {
+  font-size: 0.68rem;
+  color: var(--primary);
+  margin-top: 2px;
+  font-weight: 500;
+}
+.price-diff {
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-left: 4px;
+}
+.price-diff.down { color: var(--success); }
+.price-diff.up { color: var(--muted); }
+.badge-atl {
+  display: inline-block;
+  background: var(--success);
+  color: oklch(1.000 0.000 0);
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+.product-info .product-brand {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.product-info .product-name {
+  font-size: 0.78rem;
+  font-weight: 450;
+  color: oklch(0.350 0.010 230);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.product-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-top: 4px;
+}
+.product-info .product-price {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.product-info .buy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 14px;
+  background: var(--accent);
+  color: oklch(1.000 0.000 0);
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  transition: background 0.15s;
+  min-height: 36px;
+}
+.buy-btn:active {
+  background: var(--accent-hover);
+}
+.buy-btn.outline {
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+.buy-btn.outline:active {
+  background: oklch(0.970 0.020 30);
+}
+.buy-btn svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+/* ═══ Placeholder ═══ */
+.img-placeholder {
+  width: 76px;
+  height: 76px;
+  background: var(--surface);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+/* ═══ Disclosures ═══ */
+.disclosures {
+  margin-top: var(--space-xl);
+  padding: var(--space-md);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.disclosures dt {
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: var(--space-sm);
+}
+.disclosures dt:first-child { margin-top: 0; }
+.disclosures dd { margin-left: 0; }
+
+/* ═══ Footer ═══ */
+.footer {
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+  border-top: 1px solid var(--surface);
+}
+.footer p {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.footer .source {
+  margin-top: var(--space-sm);
+  font-size: 0.7rem;
+  color: oklch(0.600 0.010 230);
+}
+
+/* ═══ Empty State ═══ */
+.empty-state {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md);
+  color: var(--muted);
+}
+.empty-state .empty-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.5;
+}
+.empty-state p {
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* ═══ Transitions ═══ */
+@media (prefers-reduced-motion: no-preference) {
+  .topic-card {
+    animation: cardIn 0.35s ease-out both;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .topic-card:nth-child(1) { animation-delay: 0.04s; }
+  .topic-card:nth-child(2) { animation-delay: 0.08s; }
+  .topic-card:nth-child(3) { animation-delay: 0.12s; }
+  .topic-card:nth-child(4) { animation-delay: 0.16s; }
+  .topic-card:nth-child(5) { animation-delay: 0.20s; }
+  .topic-card:nth-child(6) { animation-delay: 0.24s; }
+
+  .product-card {
+    animation: slideIn 0.3s ease-out both;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══ Desktop ═══ */
+@media (min-width: 600px) {
+  .container { max-width: 520px; padding: 0 var(--space-lg); }
+  .header-inner { max-width: 520px; }
+  .topics-grid { gap: var(--space-lg); }
+  .product-card {
+    grid-template-columns: 110px 1fr;
+  }
+  .product-img img { width: 90px; height: 90px; }
+  .footer .container { max-width: 520px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header" role="banner">
+  <div class="header-inner">
+    <button class="back-btn" onclick="showTopics()" aria-label="뒤로 가기">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      뒤로
+    </button>
+    <div class="brand-block">
+      <div class="brand">피그의 전수조사</div>
+      <div class="brand-sub">데이터 기반 최저가 비교</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Topics View -->
+  <div class="topics-section">
+    <div class="container">
+      <div class="hero">
+        <h1>피그의 전수조사</h1>
+        <p class="stat"><strong id="total-count">0</strong>개 검색 → 필터링 → <strong id="survive-count">0</strong>개 생존<br><span id="gen-date">2026-07-21 16:13</span> 기준 · 매일 자동 갱신</p>
+      </div>
+      <div class="topics-grid" id="topics-grid"></div>
+    </div>
+  </div>
+
+  <!-- Products View (with ranking tabs) -->
+  <div class="products-section">
+    <div class="container">
+      <div class="products-header">
+        <h2 id="products-title"></h2>
+        <p class="products-desc" id="products-desc" style="display:none;"></p>
+        <p class="products-count" id="products-count"></p>
+      </div>
+      <div class="commission-notice">구매 클릭 시 운영자가 수수료를 받을 수 있습니다.</div>
+      <div class="commission-notice" id="filter-notice" style="display:none;"></div>
+      <div class="ranking-tabs" id="ranking-tabs" role="tablist"></div>
+      <p class="ranking-note" id="ranking-note" style="display:none;"></p>
+      <div class="product-list" id="product-list"></div>
+      <div class="disclosures" id="disclosures" style="display:none;">
+        <dl>
+          <dt>전기료 계산 기준</dt>
+          <dd>한전 주택용 요금 120원/kWh · 하루 8시간 · 3개월 사용 가정</dd>
+          <dt>데이터 원칙</dt>
+          <dd>모든 가격은 네이버 쇼핑 API 실데이터입니다. 스펙은 제조사 공식 자료 기준이며 출처 URL과 확인 날짜를 기록합니다. 미확인 항목은 '확인 중'으로 표시됩니다.</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>
+      가격 정보는 네이버 쇼핑 API 기준이며 실제 구매 시 변동될 수 있습니다.<br>
+      쿠팡파트너스 활동으로 일정 수수료를 받을 수 있습니다.
+    </p>
+    <p class="source">
+      <span id="footer-date">2026-07-21 16:13</span> 기준 · 피그의 전수조사 @jeonsu_josa
+    </p>
+  </div>
+</footer>
+
+<script>
+const DATA = {
+  "generated_at": "2026-07-21 16:13",
+  "assumptions": {
+    "electricity_rate": 120,
+    "daily_hours": 8,
+    "tco_months": 3
+  },
+  "topics": [
+    {
+      "name": "원룸 제습기",
+      "total": 24,
+      "brands": 15,
+      "min_price": 47900,
+      "last_checked": "2026-07-21 16:11:09",
+      "image": "https://shopping-phinf.pstatic.net/main_5352766/53527664943.20250319100458.jpg",
+      "description": "원룸용 공간 제습기 (6~14L)",
+      "compare_metric": "원/L",
+      "filter_notice": "이 페이지의 '원룸용'은 일 제습량 6~14L(공간 제습) 기준입니다. 평수×0.5~0.6L 권장 공식 기반.",
+      "spec_fields": [
+        {
+          "key": "daily_capacity_l",
+          "label": "일 제습량",
+          "unit": "L/일",
+          "type": "number",
+          "hint": "제품 스펙표의 'ℓ/일'. 27℃/60%RH 기준값만 입력"
+        },
+        {
+          "key": "power_w",
+          "label": "소비전력",
+          "unit": "W",
+          "type": "number",
+          "hint": "정격소비전력 (W)"
+        },
+        {
+          "key": "noise_db",
+          "label": "소음",
+          "unit": "dB",
+          "type": "number",
+          "hint": "운전 소음 dB. 스펙표에 명시된 값만"
+        },
+        {
+          "key": "tank_l",
+          "label": "물통 용량",
+          "unit": "L",
+          "type": "number",
+          "hint": "배수통/수조 용량 (L)"
+        },
+        {
+          "key": "dehumid_type",
+          "label": "제습 방식",
+          "unit": "",
+          "type": "select",
+          "options": [
+            [
+              "compressor",
+              "컴프레서"
+            ],
+            [
+              "desiccant",
+              "데시컨트"
+            ],
+            [
+              "peltier",
+              "펠티어(열전소자)"
+            ]
+          ]
+        },
+        {
+          "key": "energy_grade",
+          "label": "에너지등급",
+          "unit": "등급",
+          "type": "select",
+          "options": [
+            [
+              "1",
+              "1등급"
+            ],
+            [
+              "2",
+              "2등급"
+            ],
+            [
+              "3",
+              "3등급"
+            ],
+            [
+              "4",
+              "4등급"
+            ],
+            [
+              "5",
+              "5등급"
+            ]
+          ],
+          "hint": "에너지소비효율등급 라벨 숫자 1~5"
+        },
+        {
+          "key": "continuous_drain",
+          "label": "연속배수",
+          "unit": "",
+          "type": "tristate",
+          "hint": "호스 연결 연속배수 지원 여부. 불명확하면 비워두기(=확인 중)"
+        },
+        {
+          "key": "weight_kg",
+          "label": "무게(본체)",
+          "unit": "kg",
+          "type": "number",
+          "hint": "본체 무게 kg (포장 무게 아님)"
+        },
+        {
+          "key": "auto_humidity",
+          "label": "자동습도조절",
+          "unit": "",
+          "type": "tristate",
+          "hint": "희망 습도 설정/자동운전 기능. 불명확하면 비워두기"
+        }
+      ],
+      "products": [
+        {
+          "product_id": "90914552629",
+          "name": "[26년형] 넥스코 제습기 12L 에어큐브 미니 원룸 소형 가정용 화장실 저소음 습기제거",
+          "price": 129000,
+          "mall": "넥스코 공식 스토어",
+          "brand": "넥스코",
+          "image": "https://shopping-phinf.pstatic.net/main_9091455/90914552629.jpg",
+          "link": "https://smartstore.naver.com/main/products/13370042293",
+          "capacity": "12L",
+          "price_diff": null,
+          "is_all_time_low": true,
+          "check_count": 17,
+          "peltier_suspect": false,
+          "per_unit": 10750,
+          "per_unit_label": "10,750원/L",
+          "verdict": "최저가 · 10,750원/L",
+          "context": "평균보다 24% 저렴",
+          "monthly_elec": 4176,
+          "tco": 141528,
+          "per_l": 10750,
+          "per_l_label": "10,750원/L",
+          "tank_hours": 5.0,
+          "daily_capacity_l": 12,
+          "power_w": 145,
+          "noise_db": 35,
+          "tank_l": 2.5,
+          "dehumid_type": "compressor",
+          "energy_grade": null,
+          "continuous_drain": null,
+          "weight_kg": null,
+          "auto_humidity": null,
+          "spec_source": "https://smartstore.naver.com/nexco_store/products/11167284946",
+          "spec_date": "2026-07-21",
+          "spec_extras": [
+            "확인된 12L 중 소음 최저(35dB)"
+          ]
+        },
+        {
+          "product_id": "53596731451",
+          "name": "와이투에스 트리아이나 TN-H380 12L 제습기, 화이트",
+          "price": 139590,
+          "mall": "네이버",
+          "brand": "트리아이나",
+          "image": "https://shopping-phinf.pstatic.net/main_5359673/53596731451.20250317105837.jpg",
+          "link": "https://search.shopping.naver.com/catalog/53596731451",
+          "capacity": "12L",
+          "price_diff": null,
+          "is_all_time_low": false,
+          "check_count": 1,
+          "peltier_suspect": false,
+          "per_unit": 11632,
+          "per_unit_label": "11,632원/L",
+          "verdict": "12L · 가격대 진입",
+          "context": "평균보다 18% 저렴",
+          "monthly_elec": null,
+          "tco": null,
+          "per_l": null,
+          "per_l_label": null,
+          "tank_hours": null,
+          "spec_source": "",
+          "spec_date": "",
+          "spec_extras": []
+        },
+        {
+          "product_id": "53548237580",
+          "name": "듀플렉스 D11 11L 제습기, 화이트",
+          "price": 145000,
+          "mall": "네이버",
+          "brand": "듀플렉스",
+          "image": "https://shopping-phinf.pstatic.net/main_5354823/53548237580.20250430101621.jpg",
+          "link": "https://search.shopping.naver.com/catalog/53548237580",
+          "capacity": "11L",
+          "price_diff": -13990,
+          "is_all_time_low": false,
+          "check_count": 7,
+          "peltier_suspect": false,
+          "per_unit": 13181,
+          "per_unit_label": "13,181원/L",
+          "verdict": "11L · 가격대 진입",
+          "context": "평균보다 15% 저렴",
+          "monthly_elec": 5183,
+          "tco": 160552,
+          "per_l": 13181,
+          "per_l_label": "13,181원/L",
+          "tank_hours": 4.4,
+          "daily_capacity_l": 11,
+          "power_w": 180,
+          "noise_db": null,
+          "tank_l": 2,
+          "dehumid_type": null,
+          "energy_grade": null,
+          "continuous_drain": null,
+          "weight_kg": null,
+          "auto_humidity": null,
+          "spec_source": "https://www.coupang.com/vp/products/8291498356",
+          "spec_date": "2026-07-21",
+          "spec_extras": []
+        },
+        {
+          "product_id": "88704224944",
+          "name": "파세코 제습기 가정용 저소음 소형 거실 욕실 원룸 옷방 화장실 12L, 표준용량",
+          "price": 149000,
+          "mall": "온라인 파트너 비바타",
+          "brand": "파세코",
+          "image": "https://shopping-phinf.pstatic.net/main_8870422/88704224944.24.jpg",
+          "link": "https://smartstore.naver.com/main/products/11159714622",
+          "capacity": "12L",
+          "price_diff": null,
+          "is_all_time_low": false,
+          "check_count": 7,
+          "peltier_suspect": false,
+          "per_unit": 12416,
+          "per_unit_label": "12,416원/L",
+          "verdict": "",
+          "context": "평균보다 13% 저렴",
+          "monthly_elec": 4665,
+          "tco": 162996,
+          "per_l": 12416,
+          "per_l_label": "12,416원/L",
+          "tank_hours": 4.0,
+          "daily_capacity_l": 12,
+          "power_w": 162,
+          "noise_db": 36,
+          "tank_l": 2,
+          "dehumid_type": "compressor",
+          "energy_grade": null,
+          "continuous_drain": null,
+          "weight_kg": null,
+          "auto_humidity": null,
+          "spec_source": "https://smartstore.naver.com/vivata/products/11159714622",
+          "spec_date": "2026-07-21",
+          "spec_extras": []
+        },
+        {
+          "product_id": "88230080879",
+          "name": "캐리어 가정용제습기 미니 원룸 저소음 화장실 실내건조 습도조절 제습효과 8L, 화이트",
+          "price": 150000,
+          "mall": "스마트윈드",
+          "brand": "캐리어",
+          "image": "https://shopping-phinf.pstatic.net/main_8823008/88230080879.13.jpg",
+          "link": "https://smartstore.naver.com/main/products/10685574957",
+          "capacity": "8L",
+          "price_diff": null,
+          "is_all_time_low": false,
+          "check_count": 1,
+          "peltier_suspect": false,
+          "per_unit": 18750,
+          "per_unit_label": "18,750원/L",
+          "verdict": "18,750원/L · 용량 대비 비쌈",
+          "context": "평균보다 12% 저렴",
+          "monthly_elec": null,
+          "tco": null,
+          "per_l": null,
+          "per_l_label": null,
+          "tank_hours": null,
+          "spec_source": "",
+          "spec_date": "",
+          "spec_extras": []
+        },
+        {
+          "product_id": "53627234252",
+          "name": "롯데알미늄 에코제트 LDH-6700 12L, 화이트",
+          "price": 153890,
+          "mall": "네이버",
+          "brand": "에코제트",
+          "image": "https://shopping-phinf.pstatic.net/main_5362723/53627234252.20250612092739.jpg",
+          "link": "https://search.shopping.naver.com/catalog/53627234252",
+          "capacity": "12L",
+          "price_diff": null,
+          "is_all_time_low": false,
+          "check_count": 12,
+          "peltier_suspect": false,
+          "per_unit": 12824,
+          "per_unit_label": "12,824원/L",
+          "verdict": "",
+          "context": "평균보다 10% 저렴",
+          "monthly_elec": 4665,
+          "tco": 167886,
+          "per_l": 12824,
+          "per_l_label": "12,824원/L",
+          "tank_hours": 4.0,
+          "daily_capacity_l": 12,
+          "power_w": 162,
+          "noise_db": null,
+          "tank_l": 2,
+          "dehumid_type": "compressor",
+          "energy_grade": null,
+          "continuous_drain": null,
+          "weight_kg": null,
+          "auto_humidity": null,
+          "spec_source": "https://www.coupang.com/vp/products/7824466091?itemId=21262027530&vendorItemId=86491194802&src=1032001&spec=10305197&addtag=400&ctag=7824466091&lptag=I21262027530&itime=20260721152031&pageType=PRODUCT&pageValue=7824466091&wPcid=10833498854250818860813&wRef=cr.shopping.naver.com&wTime=20260721152031&redirect=landing&mcid=4b16c3e55a474e6f98e65d16c899610c&n_keyword=&n_ad_group=&n_ad=&n_rank=&n_keyword_id=&n_media=&n_campaign_type=&n_query=",
+          "spec_date": "2026-07-21",
+          "spec_extras": []
+        },
+        {
+          "product_id": "89295508453",
+          "name": "한경희 12L 슬림 제습기 연속배수 원룸제습기 화장실 미니 곰팡이 거실 가정용",
+          "price": 159000,
+          "mall": "한경희 가전 판매처",
+          "brand": "한경희생활과학",
+          "image": "https://shopping-phinf.pstatic.net/main_8929550/89295508453.2.jpg",
+          "link": "https://smartstore.naver.com/main/products/11750997934",
+          "capacity": "12L",
+          "price_diff": null,
+          "is_all_time_low": false,
+          "check_count": 4,
+          "peltier_suspect": false,
+          "per_unit": 13250,
+          "per_unit_label": "13,250원/L",
+          "verdict": "",
+          "context": "평균보다 7% 저렴",
+          "monthly_elec": 5040,
+          "tco": 174120,
+          "per_l": 12230,
+          "per_l_label": "12,230원/L",
+          "tank_hours": 3.7,
+          "daily_capacity_l": 13,
+          "power_w": 175,
+          "noise_db": 38,
+          "tank_l": 2,
+          "dehumid_type": "compressor",
+          "energy_grade": null,
+          "continuous_drain": null,
+          "weight_kg": null,
+          "auto_humidity": null,
+          "spec_source": "https://smartstore.naver.com/inframaxhaan/products/11750997934",
+          "spec_date": "2026-07-21",
+          "spec_extras": []
+        },
+        {
+          "product_id": "91002460277",
+          "name": "신일 13L 클린 제습기 원룸 저소음 미니 장마철 습도관리 장마철",
+          "price": 169000,
+          "mall": "신일 가전 판매처",
+          "brand": "신일전자",
+          "image": "https://shopping-phinf.pstatic.net/main_9100246/91002460277.2.jpg",
+          "link": "https://smartstore.naver.com/main/products/13457949925",
+          "capacity": "13L",
+          "price_diff": -5000,
+          "is_all_time_low": false,
+          "check_count": 12,
+          "peltier_suspect": false,
+          "per_unit": 13000,
+          "per_unit_label": "13,000원/L",
+          "verdict": "",
+          "context": "평균 가격대",
+          "monthly_elec": 6336,
+          "tco": 188008,
+          "per_l": 13000,
+          "per_l_label": "13,000원/L",
+          "tank_hours": 3.7,
+          "daily_capacity_l": 13,
+          "power_w": 220,
+          "noise_db": null,
+          "tank_l": 2,
+          "dehumid_type": "compressor",
+          "energy_grade": null,
+          "continuous_drain": null,
+          "weight_kg": null,
+          "auto_humidity": null,
+          "spec_source": "https://smartstore.naver.com/inframaxshinil/products/13457949925#DEFAULT",
+          "spec_date": "2026-07-21",
+          "spec_extras": []
+        },
+        {
+          "product_id": "89593460699",
+          "name": "캐리어 제습기 미니 가정용 원룸 거실 화장실 대용량 자동건조 습기제거 12L, 화이트블랙",
+          "price": 179000,
+          "mall": "캐리어에어컨 공식온라인샵",
+          "brand": "캐리어",
+          "image": "https://shopping-phinf.pstatic.net/main_8959346/89593460699.10.jpg",
+          "link": "https://smartstore.naver.com/main/products/12048950000",
+          "capacity": "12L",
+          "price_diff": -10000,
+          "is_all_time_low": false,
+          "check_count": 8,
+          "peltier_suspect": false,
+          "per_unit": 14916,
+          "per_unit_label": "14,916원/L",
+          "verdict": "",
+          "context": "평균 가격대",
+          "monthly_elec": 7200,
+          "tco": 200600,
+          "per_l": 14916,
+          "per_l_label": "14,916원/L",
+          "tank_hours": 4.0,
+          "daily_capacity_l": 12,
+          "power_w": 250,
+          "noise_db": null,
+          "tank_l": 2,
+          "dehumid_type": "compressor",
+          "energy_grade": null,
+          "continuous_drain": null,
+          "weight_kg": null,
+          "auto_humidity": null,
+          "spec_source": "https://smartstore.naver.com/hsnystore/products/12048950000",
+          "spec_date": "2026-07-21",
+          "spec_extras": []
+        },
+        {
+          "product_id": "53684736902",
+          "name": "롯데알미늄 에코제트 LDH-7700 12L, 화이트",
+          "price": 189000,
+          "mall": "네이버",
+          "brand": "에코제트",
+          "image": "https://shopping-phinf.pstatic.net/main_5368473/53684736902.20250612103847.jpg",
+          "link": "https://search.shopping.naver.com/catalog/53684736902",
+          "capacity": "12L",
+          "price_diff": null,
+          "is_all_time_low": false,
+          "check_count": 1,
+          "peltier_suspect": false,
+          "per_unit": 15750,
+          "per_unit_label": "15,750원/L",
+          "verdict": "",
+          "context": "평균보다 10% 비쌈",
+          "monthly_elec": null,
+          "tco": null,
+          "per_l": null,
+          "per_l_label": null,
+          "tank_hours": null,
+          "spec_source": "",
+          "spec_date": "",
+          "spec_extras": []
+        },
+        {
+          "product_id": "87845791314",
+          "name": "신일 슬림 13L 제습기 욕실제습기 원룸 드레스룸 습기제거 미니 베란다 장마철",
+          "price": 199000,
+          "mall": "신일 가전 판매처",
+          "brand": "신일전자",
+          "image": "https://shopping-phinf.pstatic.net/main_8784579/87845791314.7.jpg",
+          "link": "https://smartstore.naver.com/main/products/10301287300",
+          "capacity": "13L",
+          "price_diff": null,
+          "is_all_time_low": true,
+          "check_count": 19,
+          "peltier_suspect": false,
+          "per_unit": 15307,
+          "per_unit_label": "15,307원/L",
+          "verdict": "",
+          "context": "평균보다 16% 비쌈",
+          "monthly_elec": 6537,
+          "tco": 218612,
+          "per_l": 15307,
+          "per_l_label": "15,307원/L",
+          "tank_hours": 3.7,
+          "daily_capacity_l": 13,
+          "power_w": 227,
+          "noise_db": 38,
+          "tank_l": 2,
+          "dehumid_type": "compressor",
+          "energy_grade": null,
+          "continuous_drain": null,
+          "weight_kg": null,
+          "auto_humidity": null,
+          "spec_source": "https://smartstore.naver.com/inframaxshinil/products/10301287300",
+          "spec_date": "2026-07-21",
+          "spec_extras": []
+        },
+        {
+          "product_id": "53733066286",
+          "name": "위닉스 위닉스뽀송 DXAW120-NYK 12L, 화이트",
+          "price": 219000,
+          "mall": "네이버",
+          "brand": "위닉스뽀송",
+          "image": "https://shopping-phinf.pstatic.net/main_5373306/53733066286.20250324093053.jpg",
+          "link": "https://search.shopping.naver.com/catalog/53733066286",
+          "capacity": "12L",
+          "price_diff": null,
+          "is_all_time_low": false,
+          "check_count": 6,
+          "peltier_suspect": false,
+          "per_unit": 18250,
+          "per_unit_label": "18,250원/L",
+          "verdict": "",
+          "context": "평균보다 27% 비쌈",
+          "monthly_elec": 9072,
+          "tco": 246216,
+          "per_l": 18250,
+          "per_l_label": "18,250원/L",
+          "tank_hours": 6.0,
+          "daily_capacity_l": 12,
+          "power_w": 315,
+          "noise_db": null,
+          "tank_l": 3,
+          "dehumid_type": "compressor",
+          "energy_grade": null,
+          "continuous_drain": null,
+          "weight_kg": null,
+          "auto_humidity": null,
+          "spec_source": "https://smartstore.naver.com/roothings/products/11692476132?NaPm=ct%3Dmrua424g%7Cci%3D9d54008fc81598a6ff02830a3fbe1351c5512480%7Ctr%3Dbrc%7Csn%3D9670554%7Chk%3D555c4fa81dfd06c904d5be849717fe8c491077b4&nl-query=-",
+          "spec_date": "2026-07-21",
+          "spec_extras": []
+        },
+        {
+          "product_id": "89294170972",
+          "name": "캐리어 제습기 1등급 가정용 원룸 거실 화장실 욕실 자동제습 결로방지 14L, 화이트블랙",
+          "price": 249000,
+          "mall": "캐리어에어컨 공식온라인샵",
+          "brand": "캐리어",
+          "image": "https://shopping-phinf.pstatic.net/main_8929417/89294170972.11.jpg",
+          "link": "https://smartstore.naver.com/main/products/11749660453",
+          "capacity": "14L",
+          "price_diff": null,
+          "is_all_time_low": false,
+          "check_count": 10,
+          "peltier_suspect": false,
+          "per_unit": 17785,
+          "per_unit_label": "17,785원/L",
+          "verdict": "",
+          "context": "평균보다 45% 비쌈",
+          "monthly_elec": 7200,
+          "tco": 270600,
+          "per_l": 17785,
+          "per_l_label": "17,785원/L",
+          "tank_hours": 6.9,
+          "daily_capacity_l": 14,
+          "power_w": 250,
+          "noise_db": null,
+          "tank_l": 4,
+          "dehumid_type": "compressor",
+          "energy_grade": null,
+          "continuous_drain": null,
+          "weight_kg": null,
+          "auto_humidity": null,
+          "spec_source": "https://smartstore.naver.com/hsnystore/products/11749660453",
+          "spec_date": "2026-07-21",
+          "spec_extras": []
+        }
+      ],
+      "rankings": {
+        "lowest_price": {
+          "label": "최저가",
+          "items": [
+            {
+              "product_id": "90914552629",
+              "name": "[26년형] 넥스코 제습기 12L 에어큐브 미니 원룸 소형 가정용 화장실 저소음 습기제거",
+              "price": 129000,
+              "mall": "넥스코 공식 스토어",
+              "brand": "넥스코",
+              "image": "https://shopping-phinf.pstatic.net/main_9091455/90914552629.jpg",
+              "link": "https://smartstore.naver.com/main/products/13370042293",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": true,
+              "check_count": 17,
+              "peltier_suspect": false,
+              "per_unit": 10750,
+              "per_unit_label": "10,750원/L",
+              "verdict": "최저가 · 10,750원/L",
+              "context": "평균보다 24% 저렴",
+              "monthly_elec": 4176,
+              "tco": 141528,
+              "per_l": 10750,
+              "per_l_label": "10,750원/L",
+              "tank_hours": 5.0,
+              "daily_capacity_l": 12,
+              "power_w": 145,
+              "noise_db": 35,
+              "tank_l": 2.5,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/nexco_store/products/11167284946",
+              "spec_date": "2026-07-21",
+              "spec_extras": [
+                "확인된 12L 중 소음 최저(35dB)"
+              ]
+            },
+            {
+              "product_id": "53596731451",
+              "name": "와이투에스 트리아이나 TN-H380 12L 제습기, 화이트",
+              "price": 139590,
+              "mall": "네이버",
+              "brand": "트리아이나",
+              "image": "https://shopping-phinf.pstatic.net/main_5359673/53596731451.20250317105837.jpg",
+              "link": "https://search.shopping.naver.com/catalog/53596731451",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 1,
+              "peltier_suspect": false,
+              "per_unit": 11632,
+              "per_unit_label": "11,632원/L",
+              "verdict": "12L · 가격대 진입",
+              "context": "평균보다 18% 저렴",
+              "monthly_elec": null,
+              "tco": null,
+              "per_l": null,
+              "per_l_label": null,
+              "tank_hours": null,
+              "spec_source": "",
+              "spec_date": "",
+              "spec_extras": []
+            },
+            {
+              "product_id": "53548237580",
+              "name": "듀플렉스 D11 11L 제습기, 화이트",
+              "price": 145000,
+              "mall": "네이버",
+              "brand": "듀플렉스",
+              "image": "https://shopping-phinf.pstatic.net/main_5354823/53548237580.20250430101621.jpg",
+              "link": "https://search.shopping.naver.com/catalog/53548237580",
+              "capacity": "11L",
+              "price_diff": -13990,
+              "is_all_time_low": false,
+              "check_count": 7,
+              "peltier_suspect": false,
+              "per_unit": 13181,
+              "per_unit_label": "13,181원/L",
+              "verdict": "11L · 가격대 진입",
+              "context": "평균보다 15% 저렴",
+              "monthly_elec": 5183,
+              "tco": 160552,
+              "per_l": 13181,
+              "per_l_label": "13,181원/L",
+              "tank_hours": 4.4,
+              "daily_capacity_l": 11,
+              "power_w": 180,
+              "noise_db": null,
+              "tank_l": 2,
+              "dehumid_type": null,
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://www.coupang.com/vp/products/8291498356",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            },
+            {
+              "product_id": "88704224944",
+              "name": "파세코 제습기 가정용 저소음 소형 거실 욕실 원룸 옷방 화장실 12L, 표준용량",
+              "price": 149000,
+              "mall": "온라인 파트너 비바타",
+              "brand": "파세코",
+              "image": "https://shopping-phinf.pstatic.net/main_8870422/88704224944.24.jpg",
+              "link": "https://smartstore.naver.com/main/products/11159714622",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 7,
+              "peltier_suspect": false,
+              "per_unit": 12416,
+              "per_unit_label": "12,416원/L",
+              "verdict": "",
+              "context": "평균보다 13% 저렴",
+              "monthly_elec": 4665,
+              "tco": 162996,
+              "per_l": 12416,
+              "per_l_label": "12,416원/L",
+              "tank_hours": 4.0,
+              "daily_capacity_l": 12,
+              "power_w": 162,
+              "noise_db": 36,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/vivata/products/11159714622",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            },
+            {
+              "product_id": "88230080879",
+              "name": "캐리어 가정용제습기 미니 원룸 저소음 화장실 실내건조 습도조절 제습효과 8L, 화이트",
+              "price": 150000,
+              "mall": "스마트윈드",
+              "brand": "캐리어",
+              "image": "https://shopping-phinf.pstatic.net/main_8823008/88230080879.13.jpg",
+              "link": "https://smartstore.naver.com/main/products/10685574957",
+              "capacity": "8L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 1,
+              "peltier_suspect": false,
+              "per_unit": 18750,
+              "per_unit_label": "18,750원/L",
+              "verdict": "18,750원/L · 용량 대비 비쌈",
+              "context": "평균보다 12% 저렴",
+              "monthly_elec": null,
+              "tco": null,
+              "per_l": null,
+              "per_l_label": null,
+              "tank_hours": null,
+              "spec_source": "",
+              "spec_date": "",
+              "spec_extras": []
+            }
+          ]
+        },
+        "value_per_l": {
+          "label": "원/L 가성비",
+          "items": [
+            {
+              "product_id": "90914552629",
+              "name": "[26년형] 넥스코 제습기 12L 에어큐브 미니 원룸 소형 가정용 화장실 저소음 습기제거",
+              "price": 129000,
+              "mall": "넥스코 공식 스토어",
+              "brand": "넥스코",
+              "image": "https://shopping-phinf.pstatic.net/main_9091455/90914552629.jpg",
+              "link": "https://smartstore.naver.com/main/products/13370042293",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": true,
+              "check_count": 17,
+              "peltier_suspect": false,
+              "per_unit": 10750,
+              "per_unit_label": "10,750원/L",
+              "verdict": "최저가 · 10,750원/L",
+              "context": "평균보다 24% 저렴",
+              "monthly_elec": 4176,
+              "tco": 141528,
+              "per_l": 10750,
+              "per_l_label": "10,750원/L",
+              "tank_hours": 5.0,
+              "daily_capacity_l": 12,
+              "power_w": 145,
+              "noise_db": 35,
+              "tank_l": 2.5,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/nexco_store/products/11167284946",
+              "spec_date": "2026-07-21",
+              "spec_extras": [
+                "확인된 12L 중 소음 최저(35dB)"
+              ]
+            },
+            {
+              "product_id": "89295508453",
+              "name": "한경희 12L 슬림 제습기 연속배수 원룸제습기 화장실 미니 곰팡이 거실 가정용",
+              "price": 159000,
+              "mall": "한경희 가전 판매처",
+              "brand": "한경희생활과학",
+              "image": "https://shopping-phinf.pstatic.net/main_8929550/89295508453.2.jpg",
+              "link": "https://smartstore.naver.com/main/products/11750997934",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 4,
+              "peltier_suspect": false,
+              "per_unit": 13250,
+              "per_unit_label": "13,250원/L",
+              "verdict": "",
+              "context": "평균보다 7% 저렴",
+              "monthly_elec": 5040,
+              "tco": 174120,
+              "per_l": 12230,
+              "per_l_label": "12,230원/L",
+              "tank_hours": 3.7,
+              "daily_capacity_l": 13,
+              "power_w": 175,
+              "noise_db": 38,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/inframaxhaan/products/11750997934",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            },
+            {
+              "product_id": "88704224944",
+              "name": "파세코 제습기 가정용 저소음 소형 거실 욕실 원룸 옷방 화장실 12L, 표준용량",
+              "price": 149000,
+              "mall": "온라인 파트너 비바타",
+              "brand": "파세코",
+              "image": "https://shopping-phinf.pstatic.net/main_8870422/88704224944.24.jpg",
+              "link": "https://smartstore.naver.com/main/products/11159714622",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 7,
+              "peltier_suspect": false,
+              "per_unit": 12416,
+              "per_unit_label": "12,416원/L",
+              "verdict": "",
+              "context": "평균보다 13% 저렴",
+              "monthly_elec": 4665,
+              "tco": 162996,
+              "per_l": 12416,
+              "per_l_label": "12,416원/L",
+              "tank_hours": 4.0,
+              "daily_capacity_l": 12,
+              "power_w": 162,
+              "noise_db": 36,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/vivata/products/11159714622",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            },
+            {
+              "product_id": "53627234252",
+              "name": "롯데알미늄 에코제트 LDH-6700 12L, 화이트",
+              "price": 153890,
+              "mall": "네이버",
+              "brand": "에코제트",
+              "image": "https://shopping-phinf.pstatic.net/main_5362723/53627234252.20250612092739.jpg",
+              "link": "https://search.shopping.naver.com/catalog/53627234252",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 12,
+              "peltier_suspect": false,
+              "per_unit": 12824,
+              "per_unit_label": "12,824원/L",
+              "verdict": "",
+              "context": "평균보다 10% 저렴",
+              "monthly_elec": 4665,
+              "tco": 167886,
+              "per_l": 12824,
+              "per_l_label": "12,824원/L",
+              "tank_hours": 4.0,
+              "daily_capacity_l": 12,
+              "power_w": 162,
+              "noise_db": null,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://www.coupang.com/vp/products/7824466091?itemId=21262027530&vendorItemId=86491194802&src=1032001&spec=10305197&addtag=400&ctag=7824466091&lptag=I21262027530&itime=20260721152031&pageType=PRODUCT&pageValue=7824466091&wPcid=10833498854250818860813&wRef=cr.shopping.naver.com&wTime=20260721152031&redirect=landing&mcid=4b16c3e55a474e6f98e65d16c899610c&n_keyword=&n_ad_group=&n_ad=&n_rank=&n_keyword_id=&n_media=&n_campaign_type=&n_query=",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            },
+            {
+              "product_id": "91002460277",
+              "name": "신일 13L 클린 제습기 원룸 저소음 미니 장마철 습도관리 장마철",
+              "price": 169000,
+              "mall": "신일 가전 판매처",
+              "brand": "신일전자",
+              "image": "https://shopping-phinf.pstatic.net/main_9100246/91002460277.2.jpg",
+              "link": "https://smartstore.naver.com/main/products/13457949925",
+              "capacity": "13L",
+              "price_diff": -5000,
+              "is_all_time_low": false,
+              "check_count": 12,
+              "peltier_suspect": false,
+              "per_unit": 13000,
+              "per_unit_label": "13,000원/L",
+              "verdict": "",
+              "context": "평균 가격대",
+              "monthly_elec": 6336,
+              "tco": 188008,
+              "per_l": 13000,
+              "per_l_label": "13,000원/L",
+              "tank_hours": 3.7,
+              "daily_capacity_l": 13,
+              "power_w": 220,
+              "noise_db": null,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/inframaxshinil/products/13457949925#DEFAULT",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            }
+          ]
+        },
+        "tco": {
+          "label": "전기료 절약 (TCO)",
+          "items": [
+            {
+              "product_id": "90914552629",
+              "name": "[26년형] 넥스코 제습기 12L 에어큐브 미니 원룸 소형 가정용 화장실 저소음 습기제거",
+              "price": 129000,
+              "mall": "넥스코 공식 스토어",
+              "brand": "넥스코",
+              "image": "https://shopping-phinf.pstatic.net/main_9091455/90914552629.jpg",
+              "link": "https://smartstore.naver.com/main/products/13370042293",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": true,
+              "check_count": 17,
+              "peltier_suspect": false,
+              "per_unit": 10750,
+              "per_unit_label": "10,750원/L",
+              "verdict": "최저가 · 10,750원/L",
+              "context": "평균보다 24% 저렴",
+              "monthly_elec": 4176,
+              "tco": 141528,
+              "per_l": 10750,
+              "per_l_label": "10,750원/L",
+              "tank_hours": 5.0,
+              "daily_capacity_l": 12,
+              "power_w": 145,
+              "noise_db": 35,
+              "tank_l": 2.5,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/nexco_store/products/11167284946",
+              "spec_date": "2026-07-21",
+              "spec_extras": [
+                "확인된 12L 중 소음 최저(35dB)"
+              ]
+            },
+            {
+              "product_id": "53548237580",
+              "name": "듀플렉스 D11 11L 제습기, 화이트",
+              "price": 145000,
+              "mall": "네이버",
+              "brand": "듀플렉스",
+              "image": "https://shopping-phinf.pstatic.net/main_5354823/53548237580.20250430101621.jpg",
+              "link": "https://search.shopping.naver.com/catalog/53548237580",
+              "capacity": "11L",
+              "price_diff": -13990,
+              "is_all_time_low": false,
+              "check_count": 7,
+              "peltier_suspect": false,
+              "per_unit": 13181,
+              "per_unit_label": "13,181원/L",
+              "verdict": "11L · 가격대 진입",
+              "context": "평균보다 15% 저렴",
+              "monthly_elec": 5183,
+              "tco": 160552,
+              "per_l": 13181,
+              "per_l_label": "13,181원/L",
+              "tank_hours": 4.4,
+              "daily_capacity_l": 11,
+              "power_w": 180,
+              "noise_db": null,
+              "tank_l": 2,
+              "dehumid_type": null,
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://www.coupang.com/vp/products/8291498356",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            },
+            {
+              "product_id": "88704224944",
+              "name": "파세코 제습기 가정용 저소음 소형 거실 욕실 원룸 옷방 화장실 12L, 표준용량",
+              "price": 149000,
+              "mall": "온라인 파트너 비바타",
+              "brand": "파세코",
+              "image": "https://shopping-phinf.pstatic.net/main_8870422/88704224944.24.jpg",
+              "link": "https://smartstore.naver.com/main/products/11159714622",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 7,
+              "peltier_suspect": false,
+              "per_unit": 12416,
+              "per_unit_label": "12,416원/L",
+              "verdict": "",
+              "context": "평균보다 13% 저렴",
+              "monthly_elec": 4665,
+              "tco": 162996,
+              "per_l": 12416,
+              "per_l_label": "12,416원/L",
+              "tank_hours": 4.0,
+              "daily_capacity_l": 12,
+              "power_w": 162,
+              "noise_db": 36,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/vivata/products/11159714622",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            },
+            {
+              "product_id": "53627234252",
+              "name": "롯데알미늄 에코제트 LDH-6700 12L, 화이트",
+              "price": 153890,
+              "mall": "네이버",
+              "brand": "에코제트",
+              "image": "https://shopping-phinf.pstatic.net/main_5362723/53627234252.20250612092739.jpg",
+              "link": "https://search.shopping.naver.com/catalog/53627234252",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 12,
+              "peltier_suspect": false,
+              "per_unit": 12824,
+              "per_unit_label": "12,824원/L",
+              "verdict": "",
+              "context": "평균보다 10% 저렴",
+              "monthly_elec": 4665,
+              "tco": 167886,
+              "per_l": 12824,
+              "per_l_label": "12,824원/L",
+              "tank_hours": 4.0,
+              "daily_capacity_l": 12,
+              "power_w": 162,
+              "noise_db": null,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://www.coupang.com/vp/products/7824466091?itemId=21262027530&vendorItemId=86491194802&src=1032001&spec=10305197&addtag=400&ctag=7824466091&lptag=I21262027530&itime=20260721152031&pageType=PRODUCT&pageValue=7824466091&wPcid=10833498854250818860813&wRef=cr.shopping.naver.com&wTime=20260721152031&redirect=landing&mcid=4b16c3e55a474e6f98e65d16c899610c&n_keyword=&n_ad_group=&n_ad=&n_rank=&n_keyword_id=&n_media=&n_campaign_type=&n_query=",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            },
+            {
+              "product_id": "89295508453",
+              "name": "한경희 12L 슬림 제습기 연속배수 원룸제습기 화장실 미니 곰팡이 거실 가정용",
+              "price": 159000,
+              "mall": "한경희 가전 판매처",
+              "brand": "한경희생활과학",
+              "image": "https://shopping-phinf.pstatic.net/main_8929550/89295508453.2.jpg",
+              "link": "https://smartstore.naver.com/main/products/11750997934",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 4,
+              "peltier_suspect": false,
+              "per_unit": 13250,
+              "per_unit_label": "13,250원/L",
+              "verdict": "",
+              "context": "평균보다 7% 저렴",
+              "monthly_elec": 5040,
+              "tco": 174120,
+              "per_l": 12230,
+              "per_l_label": "12,230원/L",
+              "tank_hours": 3.7,
+              "daily_capacity_l": 13,
+              "power_w": 175,
+              "noise_db": 38,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/inframaxhaan/products/11750997934",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            }
+          ]
+        },
+        "quiet": {
+          "label": "소음 조용한 순",
+          "items": [
+            {
+              "product_id": "90914552629",
+              "name": "[26년형] 넥스코 제습기 12L 에어큐브 미니 원룸 소형 가정용 화장실 저소음 습기제거",
+              "price": 129000,
+              "mall": "넥스코 공식 스토어",
+              "brand": "넥스코",
+              "image": "https://shopping-phinf.pstatic.net/main_9091455/90914552629.jpg",
+              "link": "https://smartstore.naver.com/main/products/13370042293",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": true,
+              "check_count": 17,
+              "peltier_suspect": false,
+              "per_unit": 10750,
+              "per_unit_label": "10,750원/L",
+              "verdict": "최저가 · 10,750원/L",
+              "context": "평균보다 24% 저렴",
+              "monthly_elec": 4176,
+              "tco": 141528,
+              "per_l": 10750,
+              "per_l_label": "10,750원/L",
+              "tank_hours": 5.0,
+              "daily_capacity_l": 12,
+              "power_w": 145,
+              "noise_db": 35,
+              "tank_l": 2.5,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/nexco_store/products/11167284946",
+              "spec_date": "2026-07-21",
+              "spec_extras": [
+                "확인된 12L 중 소음 최저(35dB)"
+              ]
+            },
+            {
+              "product_id": "88704224944",
+              "name": "파세코 제습기 가정용 저소음 소형 거실 욕실 원룸 옷방 화장실 12L, 표준용량",
+              "price": 149000,
+              "mall": "온라인 파트너 비바타",
+              "brand": "파세코",
+              "image": "https://shopping-phinf.pstatic.net/main_8870422/88704224944.24.jpg",
+              "link": "https://smartstore.naver.com/main/products/11159714622",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 7,
+              "peltier_suspect": false,
+              "per_unit": 12416,
+              "per_unit_label": "12,416원/L",
+              "verdict": "",
+              "context": "평균보다 13% 저렴",
+              "monthly_elec": 4665,
+              "tco": 162996,
+              "per_l": 12416,
+              "per_l_label": "12,416원/L",
+              "tank_hours": 4.0,
+              "daily_capacity_l": 12,
+              "power_w": 162,
+              "noise_db": 36,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/vivata/products/11159714622",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            },
+            {
+              "product_id": "89295508453",
+              "name": "한경희 12L 슬림 제습기 연속배수 원룸제습기 화장실 미니 곰팡이 거실 가정용",
+              "price": 159000,
+              "mall": "한경희 가전 판매처",
+              "brand": "한경희생활과학",
+              "image": "https://shopping-phinf.pstatic.net/main_8929550/89295508453.2.jpg",
+              "link": "https://smartstore.naver.com/main/products/11750997934",
+              "capacity": "12L",
+              "price_diff": null,
+              "is_all_time_low": false,
+              "check_count": 4,
+              "peltier_suspect": false,
+              "per_unit": 13250,
+              "per_unit_label": "13,250원/L",
+              "verdict": "",
+              "context": "평균보다 7% 저렴",
+              "monthly_elec": 5040,
+              "tco": 174120,
+              "per_l": 12230,
+              "per_l_label": "12,230원/L",
+              "tank_hours": 3.7,
+              "daily_capacity_l": 13,
+              "power_w": 175,
+              "noise_db": 38,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/inframaxhaan/products/11750997934",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            },
+            {
+              "product_id": "87845791314",
+              "name": "신일 슬림 13L 제습기 욕실제습기 원룸 드레스룸 습기제거 미니 베란다 장마철",
+              "price": 199000,
+              "mall": "신일 가전 판매처",
+              "brand": "신일전자",
+              "image": "https://shopping-phinf.pstatic.net/main_8784579/87845791314.7.jpg",
+              "link": "https://smartstore.naver.com/main/products/10301287300",
+              "capacity": "13L",
+              "price_diff": null,
+              "is_all_time_low": true,
+              "check_count": 19,
+              "peltier_suspect": false,
+              "per_unit": 15307,
+              "per_unit_label": "15,307원/L",
+              "verdict": "",
+              "context": "평균보다 16% 비쌈",
+              "monthly_elec": 6537,
+              "tco": 218612,
+              "per_l": 15307,
+              "per_l_label": "15,307원/L",
+              "tank_hours": 3.7,
+              "daily_capacity_l": 13,
+              "power_w": 227,
+              "noise_db": 38,
+              "tank_l": 2,
+              "dehumid_type": "compressor",
+              "energy_grade": null,
+              "continuous_drain": null,
+              "weight_kg": null,
+              "auto_humidity": null,
+              "spec_source": "https://smartstore.naver.com/inframaxshinil/products/10301287300",
+              "spec_date": "2026-07-21",
+              "spec_extras": []
+            }
+          ]
+        }
+      },
+      "pending": []
+    }
+  ]
+};
+const RANKING_ICONS = {
+  lowest_price: '\ud83d\udcb0',
+  value_per_l: '\ud83d\udccf',
+  tco: '\u26a1',
+  brand_lowest: '\ud83c\udff7\ufe0f',
+  cooling_value: '\u2744\ufe0f',
+  battery_rank: '\ud83d\udd0b',
+  quiet: '\ud83d\udd07'
+};
+let _currentTopic = null;
+
+function init() {
+  const totalCount = DATA.topics.reduce((s, t) => s + t.total, 0);
+  document.getElementById('total-count').textContent = totalCount.toLocaleString();
+  const surviveCount = DATA.topics.reduce((s, t) => s + t.products.length, 0);
+  document.getElementById('survive-count').textContent = surviveCount.toLocaleString();
+  const grid = document.getElementById('topics-grid');
+  grid.innerHTML = '';
+  if (DATA.topics.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>아직 데이터를 모으는 중이에요</p></div>';
+    return;
+  }
+  DATA.topics.forEach((topic, i) => {
+    const card = document.createElement('div');
+    card.className = 'topic-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', topic.name + ' 비교 보기');
+    card.style.animationDelay = (i * 0.04 + 0.04) + 's';
+    const imgHtml = topic.image
+      ? '<img src="' + topic.image + '" alt="' + topic.name + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=img-placeholder>' + topic.name[0] + '</div>\';">'
+      : '<div class="img-placeholder">' + topic.name[0] + '</div>';
+    const descHtml = topic.description ? '<div class="meta">' + topic.description + '</div>' : '';
+    card.innerHTML =
+      '<div class="topic-card-img">' + imgHtml + '</div>' +
+      '<div class="topic-card-body">' +
+        '<h3>' + topic.name + '</h3>' + descHtml +
+        '<div class="price-from">' + topic.min_price.toLocaleString() + '원~</div>' +
+        '<div class="meta">' + topic.brands + '개 브랜드 비교</div>' +
+      '</div>';
+    card.addEventListener('click', () => showProducts(topic.name));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showProducts(topic.name); }
+    });
+    grid.appendChild(card);
+  });
+}
+
+function showProducts(topicName) {
+  const topic = DATA.topics.find(t => t.name === topicName);
+  if (!topic) return;
+  _currentTopic = topic;
+  document.body.classList.add('view-products');
+  document.getElementById('products-title').textContent = topic.name + ' 비교';
+  document.getElementById('products-count').textContent =
+    topic.brands + '개 브랜드 · 최저 ' + topic.min_price.toLocaleString() + '원';
+  const descEl = document.getElementById('products-desc');
+  descEl.textContent = topic.description || '';
+  descEl.style.display = topic.description ? 'inline-block' : 'none';
+  const noticeEl = document.getElementById('filter-notice');
+  if (topic.filter_notice) {
+    noticeEl.textContent = topic.filter_notice;
+    noticeEl.style.display = 'block';
+  } else {
+    noticeEl.style.display = 'none';
+  }
+
+  // Render tabs — items 0인 탭은 숨김
+  const tabBar = document.getElementById('ranking-tabs');
+  tabBar.innerHTML = '';
+  const rKeys = Object.keys(topic.rankings || {}).filter(k => topic.rankings[k].items.length > 0);
+  rKeys.forEach((key, idx) => {
+    const r = topic.rankings[key];
+    const tab = document.createElement('button');
+    tab.className = 'ranking-tab' + (idx === 0 ? ' active' : '');
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-selected', idx === 0 ? 'true' : 'false');
+    tab.textContent = (RANKING_ICONS[key] || '') + ' ' + r.label;
+    tab.addEventListener('click', () => showRanking(key));
+    tabBar.appendChild(tab);
+  });
+
+  // Show disclosures if spec-based rankings have data
+  const hasSpecs = (topic.rankings.value_per_l && topic.rankings.value_per_l.items.length > 0)
+    || (topic.rankings.tco && topic.rankings.tco.items.length > 0);
+  document.getElementById('disclosures').style.display = hasSpecs ? 'block' : 'none';
+
+  // Show first ranking
+  if (rKeys.length > 0) showRanking(rKeys[0]);
+  history.pushState({ topic: topicName }, '', '#' + encodeURIComponent(topicName));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showRanking(rankingKey) {
+  if (!_currentTopic) return;
+  const ranking = _currentTopic.rankings[rankingKey];
+  if (!ranking) return;
+
+  // Update tab active state
+  document.querySelectorAll('.ranking-tab').forEach((tab, idx) => {
+    const keys = Object.keys(_currentTopic.rankings);
+    const isActive = keys[idx] === rankingKey;
+    tab.classList.toggle('active', isActive);
+    tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+
+  // 탭별 안내 문구
+  const noteEl = document.getElementById('ranking-note');
+  const RANKING_NOTES = {
+    quiet: '제조사 공식 스펙에 소음(dB)이 명시된 제품만 나열. 낮을수록 조용합니다.',
+    tco: '한 철 총비용 = 구매가 + (월 전기료 × 3개월). 하루 8시간, 120원/kWh 기준.',
+    value_per_l: '구매가 ÷ 일 제습량(L). 리터당 가격이 낮을수록 가성비 좋음.',
+  };
+  if (RANKING_NOTES[rankingKey]) {
+    noteEl.textContent = RANKING_NOTES[rankingKey];
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  const list = document.getElementById('product-list');
+  list.innerHTML = '';
+
+  if (ranking.items.length === 0) {
+    const needsSpecs = (rankingKey === 'value_per_l' || rankingKey === 'tco');
+    const msg = needsSpecs
+      ? '스펙 데이터 입력 후 확인 가능'
+      : '데이터 수집 중';
+    list.innerHTML = '<div class="empty-state"><p>' + msg + '</p></div>';
+    return;
+  }
+
+  const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+
+  ranking.items.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'product-card' + (i === 0 ? ' rank-1' : '');
+    card.style.animationDelay = (i * 0.04) + 's';
+
+    const imgHtml = p.image
+      ? '<img src="' + p.image + '" alt="' + p.brand + '" loading="lazy" onerror="this.outerHTML=\'<div class=img-placeholder>' + (p.brand ? p.brand[0] : '?') + '</div>\';">'
+      : '<div class="img-placeholder">' + (p.brand ? p.brand[0] : '?') + '</div>';
+    const linkUrl = p.link || '#';
+
+    // 랭킹별 보조 지표 표시
+    let metricHtml = '';
+    if (rankingKey === 'value_per_l' && p.per_l_label) {
+      metricHtml = '<span class="product-metric">' + p.per_l_label + '</span>';
+    } else if (rankingKey === 'tco' && p.tco != null) {
+      metricHtml = '<span class="product-metric">한 철 ' + p.tco.toLocaleString() + '원';
+      if (p.monthly_elec != null) metricHtml += ' (월 전기료 ' + p.monthly_elec.toLocaleString() + '원)';
+      metricHtml += '</span>';
+    } else if (rankingKey === 'cooling_value' && p.price_per_cool_w != null) {
+      metricHtml = '<span class="product-metric">' + p.price_per_cool_w.toLocaleString() + '원/W</span>';
+    } else if (rankingKey === 'battery_rank' && p.battery_h != null) {
+      metricHtml = '<span class="product-metric">단독 ' + p.battery_h + '시간</span>';
+    } else if (rankingKey === 'quiet' && p.noise_db != null) {
+      metricHtml = '<span class="product-metric">' + p.noise_db + 'dB</span>';
+    }
+    // 최저가 탭 보조: per_l 또는 주요 스펙
+    if (rankingKey === 'lowest_price') {
+      if (p.per_l_label) metricHtml = '<span class="product-metric">' + p.per_l_label + '</span>';
+      else if (p.battery_h != null) metricHtml = '<span class="product-metric">배터리 ' + p.battery_h + 'h</span>';
+    }
+
+    // Verdict — 모든 항목에 표시, 1위는 카테고리별 오버라이드
+    let verdictText = '';
+    let verdictWarn = false;
+    if (i === 0) {
+      if (rankingKey === 'lowest_price' || rankingKey === 'brand_lowest') verdictText = '최저가';
+      else if (rankingKey === 'value_per_l') verdictText = '가성비 1위';
+      else if (rankingKey === 'tco') verdictText = '전기료 절약 1위';
+      else if (rankingKey === 'cooling_value') verdictText = '냉방효율 1위';
+      else if (rankingKey === 'battery_rank') verdictText = '배터리 1위';
+      else if (rankingKey === 'quiet') verdictText = '가장 조용';
+    } else if (p.verdict) {
+      verdictText = p.verdict;
+      verdictWarn = verdictText.includes('비쌈');
+    }
+    const verdictCls = 'product-verdict' + (verdictWarn ? ' verdict-warn' : '');
+    const verdictHtml = verdictText ? '<span class="' + verdictCls + '">' + verdictText + '</span>' : '';
+
+    // Context
+    const ctxClass = (p.context || '').includes('저렴') ? 'cheaper' : '';
+    const contextHtml = p.context ? '<span class="product-context ' + ctxClass + '">' + p.context + '</span>' : '';
+    // 스펙 보조 판정
+    const extrasHtml = (p.spec_extras && p.spec_extras.length > 0)
+      ? '<span class="product-spec-extras">' + p.spec_extras.join(' · ') + '</span>'
+      : '';
+    // 가격 변동 뱃지
+    let diffHtml = '';
+    if (p.price_diff != null && p.price_diff < 0) {
+      diffHtml = '<span class="price-diff down">▼' + Math.abs(p.price_diff).toLocaleString() + '원</span>';
+    } else if (p.price_diff != null && p.price_diff > 0) {
+      diffHtml = '<span class="price-diff up">▲' + p.price_diff.toLocaleString() + '원</span>';
+    }
+    // 역대 최저
+    const atlHtml = p.is_all_time_low ? '<span class="badge-atl">역대 최저</span>' : '';
+
+    // 버튼 위계: 1~2위 filled, 3~5위 outline
+    const btnCls = i >= 2 ? 'buy-btn outline' : 'buy-btn';
+
+    card.innerHTML =
+      '<div class="product-img">' +
+        '<span class="rank">' + (i + 1) + '</span>' +
+        imgHtml +
+      '</div>' +
+      '<div class="product-info">' +
+        verdictHtml +
+        metricHtml +
+        '<span class="product-brand">' + p.brand + (p.capacity ? ' · ' + p.capacity : '') + '</span>' +
+        '<span class="product-name">' + p.name + '</span>' +
+        '<div class="product-price-row">' +
+          '<span class="product-price">' + p.price.toLocaleString() + '원' + diffHtml + atlHtml + '</span>' +
+          '<a href="' + linkUrl + '" class="' + btnCls + '" target="_blank" rel="noopener nofollow" aria-label="' + p.brand + ' 구매">구매 ' + arrowSvg + '</a>' +
+        '</div>' +
+        contextHtml +
+        extrasHtml +
+      '</div>';
+
+    list.appendChild(card);
+  });
+}
+
+function showTopics() {
+  document.body.classList.remove('view-products');
+  _currentTopic = null;
+  if (location.hash) history.pushState(null, '', location.pathname);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.addEventListener('popstate', (e) => {
+  if (e.state && e.state.topic) {
+    showProducts(e.state.topic);
+  } else {
+    showTopics();
+  }
+});
+
+init();
+</script>
+</body>
+</html>
