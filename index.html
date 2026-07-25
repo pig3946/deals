@@ -762,14 +762,14 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
       가격은 네이버 쇼핑 API 기준이며 멤버십 여부에 따라 실제 결제 금액이 다를 수 있습니다.
     </p>
     <p class="source">
-      <span id="footer-date">2026-07-25 21:12</span> 기준 · 피그의 전수조사 @jeonsu_josa
+      <span id="footer-date">2026-07-25 21:16</span> 기준 · 피그의 전수조사 @jeonsu_josa
     </p>
   </div>
 </footer>
 
 <script>
 const DATA = {
-  "generated_at": "2026-07-25 21:12",
+  "generated_at": "2026-07-25 21:16",
   "assumptions": {
     "electricity_rate": 120,
     "daily_hours": 8,
@@ -5266,7 +5266,6 @@ function init() {
       if (topic.name.includes(k)) { imgHtml = v; break; }
     }
     const descHtml = topic.description ? '<div class="meta">' + topic.description + '</div>' : '';
-    card.innerHTML =
     // 1위 미리보기
     const top1 = topic.products && topic.products[0];
     let previewHtml = '';
