@@ -826,14 +826,14 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
       가격은 네이버 쇼핑 API 기준이며 멤버십 여부에 따라 실제 결제 금액이 다를 수 있습니다.
     </p>
     <p class="source">
-      <span id="footer-date">2026-07-29 18:51</span> 기준 · 피그의 전수조사 @jeonsu_josa
+      <span id="footer-date">2026-07-29 18:55</span> 기준 · 피그의 전수조사 @jeonsu_josa
     </p>
   </div>
 </footer>
 
 <script>
 const DATA = {
-  "generated_at": "2026-07-29 18:51",
+  "generated_at": "2026-07-29 18:55",
   "assumptions": {
     "electricity_rate": 120,
     "daily_hours": 8,
@@ -5968,7 +5968,7 @@ function showRanking(rankingKey) {
   const RANKING_NOTES = {
     quiet: '제조사 공식 스펙에 소음(dB)이 명시된 제품만 나열. 낮을수록 조용합니다.',
     tco: '한 철 총비용 = 구매가 + (월 전기료 × 3개월). 하루 8시간, 120원/kWh 기준.',
-    value_per_l: '구매가 ÷ 일 제습량(L). 리터당 가격이 낮을수록 가성비 좋음.',
+    value_per_l: '구매가 ÷ 용량(L). 리터당 가격이 낮을수록 가성비 좋음.',
   };
   if (RANKING_NOTES[rankingKey]) {
     noteEl.textContent = RANKING_NOTES[rankingKey];
