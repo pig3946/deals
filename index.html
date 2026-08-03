@@ -4,8 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>피그의 전수조사 — 데이터 기반 최저가 비교</title>
-<meta name="description" content="네이버 쇼핑 API 실데이터 기반 제품별 최저가·스펙 비교. 숫자는 거짓말 안 합니다.">
+<meta name="description" content="2026-07-31 기준 관측 기록. 네이버 쇼핑 API 실데이터로 모은 제품별 최저가·스펙 비교 아카이브. 현재 가격은 다를 수 있습니다.">
+<link rel="canonical" href="https://pig3946.github.io/deals/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pig3946.github.io/deals/">
+<meta property="og:title" content="피그의 전수조사 — 데이터 기반 최저가 비교">
+<meta property="og:description" content="2026-07-31 기준 관측 기록. 네이버 쇼핑 API 실데이터로 모은 제품별 최저가·스펙 비교 아카이브. 현재 가격은 다를 수 있습니다.">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T3CLWTY18W"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-T3CLWTY18W');
+</script>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
 <style>
 /* ═══ Design Tokens ═══ */
@@ -97,6 +109,18 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   background: oklch(0.42 0.14 230);
 }
 .view-products .header .back-btn { display: flex; }
+
+/* ═══ 수집 종료 고지 ═══ */
+.archive-notice {
+  margin: var(--space-md) 0 0;
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border-left: 4px solid var(--muted);
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
 
 /* ═══ Hero ═══ */
 .hero {
@@ -728,7 +752,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
       뒤로
     </button>
     <div class="brand-block">
-      <div class="brand">매일 갱신되는 최저가 비교</div>
+      <div class="brand">2026-07-31 기준 · 수집 종료</div>
     </div>
   </div>
 </header>
@@ -737,13 +761,14 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   <!-- Topics View -->
   <div class="topics-section">
     <div class="container">
+      <p class="archive-notice">데이터 제공처 사정으로 2026년 7월 31일자로 수집을 마쳤어요. 아래는 그때까지의 관측 기록입니다.</p>
       <div class="hero">
-        <h1>오늘 사면 손해인지,<br>숫자로 알려드려요</h1>
-        <p class="hero-sub">매일 아침 자동 갱신 · 스펙은 제조사 공식 자료 · 모르는 값은 '확인 중'</p>
+        <h1>그때 얼마였는지,<br>숫자로 남겨뒀어요</h1>
+        <p class="hero-sub">2026-07-31 기준 관측 기록 · 스펙은 제조사 공식 자료 · 모르는 값은 '확인 중'</p>
         <div class="trust-badges">
           <span class="trust-badge">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            매일 7시 갱신
+            2026-07-31 기준
           </span>
           <span class="trust-badge">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -811,11 +836,118 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
           <dt id="elec-disclosure" style="display:none;">전기료 계산 기준</dt>
           <dd id="elec-disclosure-dd" style="display:none;">한전 주택용 요금 120원/kWh · 하루 8시간 · 3개월 사용 가정</dd>
           <dt>데이터 원칙</dt>
-          <dd>모든 가격은 네이버 쇼핑 API 실데이터입니다. 스펙은 제조사 공식 자료 기준이며 출처 URL과 확인 날짜를 기록합니다. 미확인 항목은 '확인 중'으로 표시됩니다.</dd>
+          <dd>모든 가격은 네이버 쇼핑 API 실데이터입니다. 스펙은 제조사 공식 자료 기준이며 출처 URL과 확인 날짜를 기록합니다. 미확인 항목은 '확인 중'으로 표시됩니다. 가격 수집은 2026-07-31자로 종료되었으며, 이후 실제 판매가는 달라졌을 수 있습니다.</dd>
         </dl>
       </div>
     </div>
   </div>
+<section id="seo-static" class="container">
+<h2>제품군별 최저가 정리 (2026-07-31 기준 관측 기록)</h2>
+<p>데이터 제공처 사정으로 2026년 7월 31일자로 수집을 마쳤어요. 아래는 그때까지의 관측 기록입니다.</p>
+<h3>손선풍기 최저가 비교 (30개 노출 / 전체 125개 조사)</h3>
+<p>휴대용 손선풍기·넥밴드 비교</p>
+<table><thead><tr><th>제품</th><th>브랜드</th><th>최저가</th><th>판정</th></tr></thead><tbody>
+<tr><td>NEW 써드라인 맥스 빅팬 PRO 5200mAh 빅헤드 휴대용 선풍기 접이식 손선풍기</td><td>써드라인</td><td>30,400원</td><td>평타</td></tr>
+<tr><td>크레모아 클립팬 휴대용 선풍기 무선 손풍기 몸풍기 쿨스카프</td><td>크레모아</td><td>30,600원</td><td>평타</td></tr>
+<tr><td>슈틸루스터 하이엔드 에어컨 선풍기 ST-PAF300  올리브  휴대용 무선 미니 손풍기</td><td>슈틸루스터</td><td>31,300원</td><td>평타</td></tr>
+<tr><td>크레모아 클립팬 휴대용 무선 냉각 손풍기 슬라이드 카키</td><td>크레모아</td><td>31,500원</td><td>평타</td></tr>
+<tr><td>산리오선풍기 캐릭터 손선풍기 탁상용 데스크팬 휴대용 손풍기 캠핑 헬로키티</td><td>산리오</td><td>31,900원</td><td>평타</td></tr>
+<tr><td>써드라인 알래스카PRO 급속 냉각 초강력 손선풍기 5200mAh 휴대용 초고속 미니 선풍기</td><td>써드라인</td><td>31,900원</td><td>평타</td></tr>
+<tr><td>[1+1] 알로코리아 휴대용 미니 선풍기 F2 핸디 손풍기 손선풍기</td><td>알로코리아</td><td>31,900원</td><td>평타</td></tr>
+<tr><td>토네이도프로 휴대용 냉각 선풍기 에어컨 손풍기 손선풍기 100단</td><td>디큐브</td><td>32,700원</td><td>평타</td></tr>
+<tr><td>오아 넥쿨러 프로 휴대용 넥밴드 목 목걸이 미니 선풍기</td><td>오아</td><td>32,800원</td><td>평타</td></tr>
+<tr><td>한일전기 휴대용선풍기 냉각 100단 BLDC 무선 미니 손풍기 손 선풍기 클립팬 핸디형 에어컨</td><td>한일전기</td><td>32,800원</td><td>평타</td></tr>
+<tr><td>단순생활 휴대용 넥밴드 선풍기 롤링</td><td>단순생활</td><td>32,900원</td><td>평타</td></tr>
+<tr><td>하이온 급속 냉각 휴대용 선풍기 H26 핸디형 미니 에어컨 손선풍기 무선 쿨링 손풍기</td><td>하이온</td><td>32,900원</td><td>평타</td></tr>
+<tr><td>벤딕트 휴대용 선풍기 손선풍기 냉각 미니 손풍기 핸디 쿨링 에어컨 빈다르 플로우</td><td>벤딕트</td><td>32,900원</td><td>평타</td></tr>
+<tr><td>BLDC 8000mAh 21시간 휴대용 허리 선풍기 클립팬 손풍기 목 넥밴드 집게 등풍기</td><td>파인굿즈</td><td>32,900원</td><td>평타</td></tr>
+<tr><td>[쿨썸머] 루메나 휴대용 무선 넥밴드 선풍기 FAN PRO DUO (2종)</td><td>루메나</td><td>33,630원</td><td>평타</td></tr>
+<tr><td>루메나 선풍기 FAN PRO JET 새틴 블루</td><td>루메나</td><td>33,840원</td><td>평타</td></tr>
+<tr><td>미스트 선풍기 휴대용 냉각 손 선풍기 야구장 무선 미니 핸디 손풍기 탁상용 냉풍기 USB</td><td>머레이</td><td>33,900원</td><td>평타</td></tr>
+<tr><td>시원 넥밴드선풍기 날개없는 무선 휴대용 BLDC 미니 선풍기 넥쿨러 캠핑 넥 목선풍기</td><td>CONE</td><td>33,900원</td><td>평타</td></tr>
+<tr><td>넥밴드 선풍기 넥선풍기 캠핑용 풍기 목에거는 넥풍기 목풍기 고용량</td><td>씨원</td><td>33,900원</td><td>평타</td></tr>
+<tr><td>지수라이프 목에거는 넥밴드 넥풍기 선풍기</td><td>대원</td><td>33,900원</td><td>평타</td></tr>
+<tr><td>로이체 산리오 캐릭터즈 냉각패드 BLDC 휴대용 선풍기 SAN-RHF-C 헬로키티 손풍기 핸디 무선 USB</td><td>로이체</td><td>33,900원</td><td>평타</td></tr>
+<tr><td>디센느 휴대용선풍기 냉각 에어컨 미니 손선풍기 핸디 무선 손풍기 100단 Fan5</td><td>디센느</td><td>33,900원</td><td>평타</td></tr>
+<tr><td>크레모아 클립팬 카키 휴대용 손풍기 허리 목 바디 벨트 무선 탁상용 소형 충전식 BLDC 저소음 넥밴드선풍기</td><td>크레모아</td><td>34,000원</td><td>평타</td></tr>
+<tr><td>휴대용선풍기 넥밴드 목걸이형 선풍기 넥풍기 넥선풍기 목풍기 여름필수템</td><td>블루아이디</td><td>34,800원</td><td>평타</td></tr>
+<tr><td>오아 아이스볼트폴드 휴대용 선풍기 넥 목걸이 미니 급속 냉각 핸디 핸드 손풍기</td><td>오아</td><td>34,800원</td><td>평타</td></tr>
+<tr><td>지수라이프 손선풍기 접이식 미니 무선 휴대용 선풍기 손풍기 폴더블 라이프7 카본 블랙</td><td>지수라이프</td><td>34,900원</td><td>평타</td></tr>
+<tr><td>프럭스R 빅팬손선풍기 휴대용 대형선풍기 폴더블 야구장 핸디 100단 15cm 손풍기</td><td>디큐브</td><td>34,900원</td><td>평타</td></tr>
+<tr><td>한일 휴대용 선풍기 무선 손선풍기 핸디형 충전식 미니 손풍기 클립팬</td><td>한일전기</td><td>34,900원</td><td>평타</td></tr>
+<tr><td>[쿨썸머] 루메나 휴대용 무선 넥밴드 선풍기 FAN PRO DUO (2종)</td><td>루메나</td><td>35,000원</td><td>평타</td></tr>
+<tr><td>한경희 빅팬 무선 휴대용 탁상용 접이식 핸디 선풍기 HF-B90F</td><td>한경희생활과학</td><td>35,800원</td><td>평타</td></tr>
+</tbody></table>
+<h3>아이스박스 최저가 비교 (30개 노출 / 전체 75개 조사)</h3>
+<p>캠핑·물놀이용 아이스박스·쿨러 (15~70L)</p>
+<table><thead><tr><th>제품</th><th>브랜드</th><th>최저가</th><th>판정</th></tr></thead><tbody>
+<tr><td>써모스 콤팩트 소프트 쿨러백 REQ-020K 블랙 20L  보냉백 캠핑 아이스쿨러</td><td>써모스</td><td>30,900원</td><td>이득</td></tr>
+<tr><td>휴대용 보냉 캠핑용 테이블 아이스박스 25L</td><td>올리빙</td><td>32,900원</td><td>이득</td></tr>
+<tr><td>카즈미 스카디 소프트 쿨러 피크닉 캠핑 아이스박스 보냉백 25L</td><td>카즈미</td><td>33,000원</td><td>이득</td></tr>
+<tr><td>카즈미 스카디 소프트 쿨러 보냉가방 아이스박스 25L</td><td>카즈미</td><td>33,900원</td><td>이득</td></tr>
+<tr><td>차량용 미니아이스박스 소형 캠핑아이스박스 대형 쿨러 신와 17L</td><td>SHINWA</td><td>33,900원</td><td>이득</td></tr>
+<tr><td>로고스 소프트 쿨러 25L 카키 그레이 코스트코</td><td>로고스</td><td>34,990원</td><td>이득</td></tr>
+<tr><td>랄라 보냉백 캠핑 쿨러백 휴대용 차량용 보온 보냉가방 대용량 캠핑용 아이스박스 36L</td><td>랄라</td><td>36,900원</td><td>이득</td></tr>
+<tr><td>[국내당일발송] 트레이더조 보냉백 가방 대형 30리터 보라 퍼플 라벤더 트레이더조스 미국</td><td>트레이더조</td><td>36,900원</td><td>이득</td></tr>
+<tr><td>쿨러백 보냉 가방 캐리어 캠핑 피크닉 바퀴 달린 아이스 박스 백 대형 사각 35L</td><td>랑고</td><td>38,500원</td><td>이득</td></tr>
+<tr><td>언더힐 보냉백 보냉가방 쿨러백 소프트쿨러 20L</td><td>언더힐</td><td>39,000원</td><td>이득</td></tr>
+<tr><td>아틀라스 네어 소프트 하드 쿨러 36L</td><td>스위스알파인클럽</td><td>45,000원</td><td>이득</td></tr>
+<tr><td>락앤락 소프트 쿨러 보냉 백 42L 타이벡 에어락 아이스 보냉가방</td><td>락앤락</td><td>46,900원</td><td>이득</td></tr>
+<tr><td>언더힐 보냉백 보냉가방 쿨러백 소프트쿨러 30L</td><td>언더힐</td><td>47,000원</td><td>이득</td></tr>
+<tr><td>코베아 실버 쉘 소프트 쿨러 20L 캠핑 보냉 가방</td><td>코베아</td><td>49,000원</td><td>이득</td></tr>
+<tr><td>언더힐 보냉백 보냉가방 쿨러백 소프트쿨러 45L</td><td>언더힐</td><td>53,000원</td><td>이득</td></tr>
+<tr><td>신와 아이스박스 33L 홀리데이랜드 바퀴달린 캠핑 낚시 보냉 쿨러</td><td>SINWA</td><td>54,300원</td><td>이득</td></tr>
+<tr><td>클리프타운 아이스박스 28L 국내산 캠핑용</td><td>클리프타운</td><td>58,900원</td><td>이득</td></tr>
+<tr><td>신와 아이스박스 홀리데이 랜드 크루즈 캠핑 낚시용 쿨러 라이트게임 33L</td><td>SINWA</td><td>59,900원</td><td>이득</td></tr>
+<tr><td>노스피크 소프트 쿨백 (소프트 쿨러) 23리터</td><td>노스피크</td><td>60,800원</td><td>이득</td></tr>
+<tr><td>코스모스 20리터 캠핑 아이스 박스 차량용 쿨러 미니 아이스박스 국산</td><td>코스모스</td><td>64,000원</td><td>이득</td></tr>
+<tr><td>마운틴하이커 대용량 캠핑 아이스박스 하드쿨러 바퀴 캐리어 보냉박스 36L</td><td>마운틴하이커</td><td>64,000원</td><td>이득</td></tr>
+<tr><td>폴라리스 C1 소프트 쿨러 캠핑 보냉 백 아이스 박스 피크닉 가방 32L</td><td>폴라리스</td><td>69,900원</td><td>이득</td></tr>
+<tr><td>라그렌 타이탄 하드쿨러 아이스박스 20L 감성 캠핑 휴대용 캠핑용품 탄색상</td><td>라그렌</td><td>70,000원</td><td>이득</td></tr>
+<tr><td>차량용 미니아이스박스 소형 캠핑아이스박스 대형 쿨러 신와 33L</td><td>SHINWA</td><td>71,900원</td><td>평타</td></tr>
+<tr><td>락앤락 하드쿨러 25L 낚시 차량용 캠핑용 아이스박스 / 화이트</td><td>락앤락</td><td>75,780원</td><td>이득</td></tr>
+<tr><td>코스모스 51리터 아이스박스 대형 캠핑 쿨러 국산</td><td>코스모스</td><td>79,200원</td><td>평타</td></tr>
+<tr><td>매드독캠프 휴대용 캠핑 소프트 쿨러 접이식 아이스 박스 36L 쿨러스텐드 포함</td><td>매드독캠프</td><td>79,500원</td><td>평타</td></tr>
+<tr><td>CAMTEL 대형 대용량 차량용 캠핑 낚시 바퀴 아이스박스 아이스쿨러 블루 50리터</td><td>CAMTEL</td><td>80,800원</td><td>평타</td></tr>
+<tr><td>[CAMTEL] 대용량 캠핑 낚시 하드쿨러 아이스박스  화이트/네이비  50L</td><td>CAMTEL</td><td>83,800원</td><td>이득</td></tr>
+<tr><td>코스모스 아이스박스 24리터 낚시용 레져용 캠핑용 다용도 행주드림</td><td>코스모스</td><td>84,000원</td><td>평타</td></tr>
+</tbody></table>
+<h3>원룸 제습기 최저가 비교 (30개 노출 / 전체 127개 조사)</h3>
+<p>원룸용 공간 제습기 (6~14L)</p>
+<table><thead><tr><th>제품</th><th>브랜드</th><th>최저가</th><th>판정</th></tr></thead><tbody>
+<tr><td>제습기 6L 미니 소형 원룸 가정용 CIF-DH02 시프이컴 이동식 사무실 재습기</td><td>시프이컴</td><td>94,050원</td><td>이득</td></tr>
+<tr><td>포첸 고성능 12L 제습기 가정용 저소음 컴프레셔 자동성에제거 원룸 욕실 사무실</td><td>포첸</td><td>109,000원</td><td>이득</td></tr>
+<tr><td>델루체 대용량 최대12L 제습기 스마트 자동습도조절  DLH-DL612W</td><td>델루체</td><td>109,000원</td><td>이득</td></tr>
+<tr><td>[다신없을가격] 르젠 장마철대비 스마트 12L 올데이 이동식 제습기 LZJ-120S</td><td>LEZEN</td><td>111,400원</td><td>이득</td></tr>
+<tr><td>미홀 제습기 12L(한국 플러그)</td><td>미홀</td><td>116,620원</td><td>이득</td></tr>
+<tr><td>포첸 고성능 가정용 저소음 컴프레셔 제습기 12L  PC-DH2407</td><td>포첸</td><td>119,000원</td><td>이득</td></tr>
+<tr><td>홈플래닛 저소음 드라이핏 제습기 12L 대용량 FDD6-5184V4R2 화이트  원룸 거실 가정용 드레스룸 화장실 이동식 스마트 장마</td><td>홈플래닛</td><td>119,970원</td><td>이득</td></tr>
+<tr><td>보국전자 보국 제습기 12L</td><td>보국전자</td><td>120,780원</td><td>이득</td></tr>
+<tr><td>몽트라드 가정용 제습기 저소음 초슬림 원룸 대용량 12L</td><td>몽트라드</td><td>121,000원</td><td>이득</td></tr>
+<tr><td>넥스코 에어큐브 미니 제습기 12L</td><td>넥스코</td><td>121,550원</td><td>이득</td></tr>
+<tr><td>로얄소브린 가정용 제습기 12L [RSD-1200N]</td><td>로얄소브린</td><td>124,410원</td><td>이득</td></tr>
+<tr><td>[26년형] 넥스코 제습기 12L 에어큐브 미니 원룸 소형 가정용 화장실 저소음 습기제거</td><td>넥스코</td><td>126,200원</td><td>이득</td></tr>
+<tr><td>[26년형] 넥스코 제습기 12L 에어큐브 미니 원룸 소형 가정용 화장실 저소음 습기제거</td><td>넥스코</td><td>128,000원</td><td>이득</td></tr>
+<tr><td>어라운드 컴프레셔 이동식 소형 제습기 12L AR-101D</td><td>어라운드</td><td>129,000원</td><td>이득</td></tr>
+<tr><td>대성쎌틱 가정용 저소음 제습기 미니 원룸 화장실 거실 연속배수 12L</td><td>대성쎌틱에너시스</td><td>129,000원</td><td>이득</td></tr>
+<tr><td>씽크에어 DL30F 제습기 12L 신발건조키트 포함</td><td>씽크에어</td><td>129,000원</td><td>이득</td></tr>
+<tr><td>듀플렉스 제습기 11L D11 가정용 원룸 사무실  저소음 대용량 결로방지 옷장 세탁실 뽀송 재습기 거실 주방 매장 업소용 5평 3등급</td><td>듀플렉스</td><td>129,000원</td><td>이득</td></tr>
+<tr><td>신일 최대 10L 컴팩트 제습기 소형 미니 원룸 욕실 제습기</td><td>신일전자</td><td>134,560원</td><td>이득</td></tr>
+<tr><td>레이나 원룸 제습기 미니 화장실 소형 대용량 7L</td><td>레이나</td><td>139,000원</td><td>이득</td></tr>
+<tr><td>한일 9L 소형 옷장 욕실 화장실 작은방 미니제습기</td><td>한일</td><td>139,000원</td><td>이득</td></tr>
+<tr><td>보아르 모아 최대 12L 제습기 공기청정 원룸 저소음 소형 미니 드레스룸 옷방 습기제거</td><td>보아르</td><td>139,000원</td><td>이득</td></tr>
+<tr><td>트리아이나 가정용 제습기 12L 저소음 대용량 자동건조  TN-H380</td><td>트리아이나</td><td>139,590원</td><td>이득</td></tr>
+<tr><td>보랄 더 데일리 제습기 12L  BR-DEF1000H</td><td>보랄</td><td>139,800원</td><td>이득</td></tr>
+<tr><td>르젠 스마트 깔끔한 올데이 이동식 제습기 12L</td><td>LEZEN</td><td>143,100원</td><td>이득</td></tr>
+<tr><td>한경희 12L 제습기 / 2025년 최신형 HE-D781 단일색상</td><td>한경희</td><td>144,000원</td><td>이득</td></tr>
+<tr><td>2025년형 실리만 저소음 제습기 12L / 가정용 소형 원룸 미니 화장실 욕실</td><td>실리만</td><td>144,530원</td><td>이득</td></tr>
+<tr><td>파세코 미니제습기 12L</td><td>파세코</td><td>148,000원</td><td>이득</td></tr>
+<tr><td>롯데 컴프레셔 제습기 가정용 원룸 화장실 옷장 습기제거 미니제습기 9L, 화이트</td><td>롯데</td><td>148,000원</td><td>이득</td></tr>
+<tr><td>샤오미제습기 원룸제습기 미니제습기13L 저소음 DM-CS13BFA5A</td><td>미지아</td><td>148,400원</td><td>이득</td></tr>
+<tr><td>파세코 미니제습기 12L PDH-12251W 원룸 화장실 옷방 소형 연속배수</td><td>파세코</td><td>149,000원</td><td>이득</td></tr>
+</tbody></table>
+<p>2026-08-03 11:13 기준 · 수집 종료 · 가격은 네이버 쇼핑 API 실데이터입니다. 이후 실제 판매가는 달라졌을 수 있습니다.</p>
+</section>
 </main>
 
 <!-- Footer -->
@@ -826,14 +958,14 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
       가격은 네이버 쇼핑 API 기준이며 멤버십 여부에 따라 실제 결제 금액이 다를 수 있습니다.
     </p>
     <p class="source">
-      <span id="footer-date">2026-07-31 07:23</span> 기준 · 피그의 전수조사 @jeonsu_josa
+      <span id="footer-date">2026-08-03 11:13</span> 기준 · 수집 종료 · 피그의 전수조사 @jeonsu_josa
     </p>
   </div>
 </footer>
 
 <script>
 const DATA = {
-  "generated_at": "2026-07-31 07:23",
+  "generated_at": "2026-08-03 11:13",
   "assumptions": {
     "electricity_rate": 120,
     "daily_hours": 8,
@@ -2837,7 +2969,7 @@ const DATA = {
           "is_all_time_low": false,
           "check_count": 9,
           "vendor_count": null,
-          "price_spread": 1000,
+          "price_spread": null,
           "peltier_suspect": false,
           "per_unit": 3500,
           "per_unit_label": "3,500원/L",
@@ -3908,7 +4040,7 @@ const DATA = {
           "is_all_time_low": false,
           "check_count": 7,
           "vendor_count": null,
-          "price_spread": 2380,
+          "price_spread": null,
           "peltier_suspect": false,
           "per_unit": 9718,
           "per_unit_label": "9,718원/L",
@@ -4063,7 +4195,7 @@ const DATA = {
           "is_all_time_low": false,
           "check_count": 7,
           "vendor_count": null,
-          "price_spread": 6450,
+          "price_spread": null,
           "peltier_suspect": false,
           "per_unit": 10129,
           "per_unit_label": "10,129원/L",
@@ -4156,7 +4288,7 @@ const DATA = {
           "is_all_time_low": true,
           "check_count": 84,
           "vendor_count": null,
-          "price_spread": 1000,
+          "price_spread": null,
           "peltier_suspect": false,
           "link_type": "coupang",
           "per_unit": 10666,
@@ -4228,7 +4360,7 @@ const DATA = {
           "is_all_time_low": true,
           "check_count": 18,
           "vendor_count": null,
-          "price_spread": 10000,
+          "price_spread": null,
           "peltier_suspect": false,
           "per_unit": 10750,
           "per_unit_label": "10,750원/L",
@@ -4854,7 +4986,7 @@ const DATA = {
               "is_all_time_low": false,
               "check_count": 7,
               "vendor_count": null,
-              "price_spread": 2380,
+              "price_spread": null,
               "peltier_suspect": false,
               "per_unit": 9718,
               "per_unit_label": "9,718원/L",
@@ -5009,7 +5141,7 @@ const DATA = {
               "is_all_time_low": false,
               "check_count": 7,
               "vendor_count": null,
-              "price_spread": 6450,
+              "price_spread": null,
               "peltier_suspect": false,
               "per_unit": 10129,
               "per_unit_label": "10,129원/L",
@@ -5169,7 +5301,7 @@ const DATA = {
               "is_all_time_low": false,
               "check_count": 7,
               "vendor_count": null,
-              "price_spread": 2380,
+              "price_spread": null,
               "peltier_suspect": false,
               "per_unit": 9718,
               "per_unit_label": "9,718원/L",
@@ -5298,7 +5430,7 @@ const DATA = {
               "is_all_time_low": false,
               "check_count": 7,
               "vendor_count": null,
-              "price_spread": 2380,
+              "price_spread": null,
               "peltier_suspect": false,
               "per_unit": 9718,
               "per_unit_label": "9,718원/L",
@@ -5365,7 +5497,7 @@ const DATA = {
               "is_all_time_low": true,
               "check_count": 84,
               "vendor_count": null,
-              "price_spread": 1000,
+              "price_spread": null,
               "peltier_suspect": false,
               "link_type": "coupang",
               "per_unit": 10666,
@@ -5411,7 +5543,7 @@ const DATA = {
               "is_all_time_low": true,
               "check_count": 84,
               "vendor_count": null,
-              "price_spread": 1000,
+              "price_spread": null,
               "peltier_suspect": false,
               "link_type": "coupang",
               "per_unit": 10666,
@@ -5461,6 +5593,21 @@ let _materialFilter = '';
 let _currentRankingKey = null;
 
 function init() {
+  // 검색봇용 정적 블록은 JS가 같은 데이터를 대화형으로 그린 뒤 감춘다 (내용은 동일).
+  const seoBlock = document.getElementById('seo-static');
+  if (seoBlock) seoBlock.hidden = true;
+
+  // 유입 vs 클릭 구분용: 제휴 링크 클릭을 GA 이벤트로 남긴다.
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="http"]');
+    if (!a || typeof gtag !== 'function') return;
+    gtag('event', 'outbound_click', {
+      link_url: a.href,
+      topic: _currentTopic ? _currentTopic.name : '',
+      page_referrer: document.referrer
+    });
+  });
+
   const surviveCount = DATA.topics.reduce((s, t) => s + t.products.length, 0);
   document.getElementById('survive-count').textContent = surviveCount.toLocaleString();
   const grid = document.getElementById('topics-grid');
